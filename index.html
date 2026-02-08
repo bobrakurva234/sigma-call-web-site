@@ -1,0 +1,2252 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Рублокс - Сайт</title>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html {
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #0039a6 #f0f0f0;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #333;
+            position: relative;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+        
+        /* Кастомный скроллбар для Webkit браузеров (Chrome, Safari, Edge) */
+        ::-webkit-scrollbar {
+            width: 14px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f0f0f0;
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #0039a6 0%, #0052cc 100%);
+            border-radius: 10px;
+            border: 2px solid #f0f0f0;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #0052cc 0%, #0066ff 100%);
+        }
+        
+        /* Кастомный скроллбар для Firefox */
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: #0039a6 #f0f0f0;
+        }
+        
+        body::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(15deg);
+            width: 400px;
+            height: 400px;
+            background: linear-gradient(to bottom, 
+                #ffffff 0%, 
+                #ffffff 33.33%, 
+                #0039a6 33.33%, 
+                #0039a6 66.66%, 
+                #d52b1e 66.66%, 
+                #d52b1e 100%);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            z-index: 0;
+        }
+        
+        body::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(15deg);
+            width: 120px;
+            height: 120px;
+            background: #ffffff;
+            clip-path: polygon(20% 0%, 100% 0%, 100% 80%, 80% 100%, 0% 100%, 0% 20%);
+            z-index: 1;
+        }
+        
+        .container {
+            text-align: center;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            position: relative;
+            z-index: 10;
+            color: #333;
+        }
+        
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            color: #333;
+        }
+        
+        p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            line-height: 1.6;
+            color: #333;
+            margin-bottom: 2rem;
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 0.875rem 2rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-download {
+            background: linear-gradient(135deg, #0039a6 0%, #0052cc 100%);
+            color: white;
+        }
+        
+        .btn-download:hover {
+            background: linear-gradient(135deg, #0052cc 0%, #0066ff 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 57, 166, 0.4);
+        }
+        
+        .btn-web {
+            background: linear-gradient(135deg, #d52b1e 0%, #ff3d2e 100%);
+            color: white;
+        }
+        
+        .btn-web:hover {
+            background: linear-gradient(135deg, #ff3d2e 0%, #ff5c4f 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(213, 43, 30, 0.4);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        /* Модальное окно регистрации */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            max-width: 450px;
+            width: 90%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+        
+        .modal-header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .modal-header h2 {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+        
+        .modal-header p {
+            color: #666;
+            font-size: 0.95rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 0.875rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #0039a6;
+        }
+        
+        .btn-submit {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #0039a6 0%, #0052cc 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-submit:hover {
+            background: linear-gradient(135deg, #0052cc 0%, #0066ff 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 57, 166, 0.4);
+        }
+        
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 1.5rem 0;
+            color: #999;
+        }
+        
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .divider::before {
+            margin-right: 0.5rem;
+        }
+        
+        .divider::after {
+            margin-left: 0.5rem;
+        }
+        
+        .btn-google {
+            width: 100%;
+            padding: 0.875rem;
+            background: white;
+            color: #333;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+        }
+        
+        .btn-google:hover {
+            border-color: #4285f4;
+            background: #f8f9fa;
+            box-shadow: 0 2px 8px rgba(66, 133, 244, 0.2);
+        }
+        
+        .google-icon {
+            width: 20px;
+            height: 20px;
+        }
+        
+        /* Меню игры */
+        .game-menu {
+            display: none;
+            width: 100%;
+            max-width: 1200px;
+            max-height: 90vh;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+            position: relative;
+            z-index: 10;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+        
+        .game-menu.active {
+            display: block;
+        }
+        
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .game-header h2 {
+            font-size: 2rem;
+            color: #333;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .user-email {
+            color: #666;
+            font-size: 0.95rem;
+        }
+        
+        .btn-logout {
+            padding: 0.5rem 1rem;
+            background: #d52b1e;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+        
+        .btn-logout:hover {
+            background: #ff3d2e;
+        }
+        
+        .menu-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .tab-btn {
+            padding: 0.75rem 1.5rem;
+            background: #f0f0f0;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #666;
+            transition: all 0.3s;
+        }
+        
+        .tab-btn.active {
+            background: linear-gradient(135deg, #0039a6 0%, #0052cc 100%);
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .category-filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .category-filter-btn {
+            padding: 0.6rem 1.2rem;
+            background: #f0f0f0;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #666;
+            transition: all 0.3s;
+        }
+        
+        .category-filter-btn:hover {
+            background: #e0e0e0;
+        }
+        
+        .category-filter-btn.active {
+            background: linear-gradient(135deg, #d52b1e 0%, #ff3d2e 100%);
+            color: white;
+            border-color: #d52b1e;
+        }
+        
+        .game-card {
+            transition: all 0.3s;
+        }
+        
+        .game-card.hidden {
+            display: none;
+        }
+        
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .game-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .game-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+        
+        .game-card-image {
+            width: 100%;
+            height: 150px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+        }
+        
+        .game-card-info {
+            padding: 1rem;
+        }
+        
+        .game-card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+        
+        .game-card-description {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .avatar-editor {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .avatar-preview {
+            width: 250px;
+            height: 300px;
+            margin: 0 auto 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            font-size: 3rem;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .avatar-preview .avatar-hair {
+            position: absolute;
+            top: 20px;
+            font-size: 4rem;
+            z-index: 3;
+            filter: drop-shadow(0 3px 6px rgba(0,0,0,0.4));
+            transform-origin: center;
+        }
+        
+        .avatar-preview .avatar-face {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2;
+            font-size: 4.5rem;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+        }
+        
+        .avatar-preview .avatar-body {
+            position: absolute;
+            bottom: 10px;
+            font-size: 3.5rem;
+            z-index: 1;
+            filter: drop-shadow(0 3px 6px rgba(0,0,0,0.4));
+        }
+        
+        .avatar-preview .avatar-eyes {
+            position: absolute;
+            top: 45%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2;
+            font-size: 1.5rem;
+        }
+        
+        .avatar-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .control-group label {
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .control-group input[type="range"] {
+            width: 100%;
+        }
+        
+        .control-group select {
+            padding: 0.75rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        /* Игровая область */
+        .game-view {
+            display: none;
+            width: 100%;
+            max-width: 1200px;
+            max-height: 90vh;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+            position: relative;
+            z-index: 10;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+        
+        .game-view.active {
+            display: block;
+        }
+        
+        .game-view-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .game-view-header h2 {
+            font-size: 2rem;
+            color: #333;
+        }
+        
+        .btn-back {
+            padding: 0.5rem 1.5rem;
+            background: #666;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .btn-back:hover {
+            background: #777;
+        }
+        
+        .game-area {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            min-height: 500px;
+            max-height: 70vh;
+            overflow-y: auto;
+            overflow-x: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Игра Обея (Прятки) */
+        .hide-seek-game {
+            text-align: center;
+        }
+        
+        .hide-seek-game h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+        
+        .hide-seek-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            max-width: 600px;
+            margin: 2rem auto;
+        }
+        
+        .hide-seek-cell {
+            aspect-ratio: 1;
+            background: #f0f0f0;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            transition: all 0.3s;
+            border: 3px solid transparent;
+        }
+        
+        .hide-seek-cell:hover {
+            background: #e0e0e0;
+            transform: scale(1.05);
+        }
+        
+        .hide-seek-cell.found {
+            background: #4caf50;
+            border-color: #2e7d32;
+        }
+        
+        .hide-seek-cell.wrong {
+            background: #f44336;
+            animation: shake 0.5s;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        
+        .game-score {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+        
+        /* Игра Дом (Строительство) */
+        .house-builder {
+            text-align: center;
+        }
+        
+        .house-preview {
+            width: 300px;
+            height: 300px;
+            margin: 2rem auto;
+            background: #f5f5f5;
+            border: 3px solid #333;
+            border-radius: 10px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 1rem;
+        }
+        
+        .house-part {
+            margin: 0.5rem;
+            font-size: 3rem;
+            transition: all 0.3s;
+        }
+        
+        .house-controls {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+        
+        .house-btn {
+            padding: 0.75rem 1.5rem;
+            background: #0039a6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .house-btn:hover {
+            background: #0052cc;
+            transform: translateY(-2px);
+        }
+        
+        /* Игра Гонки */
+        .racing-game {
+            text-align: center;
+        }
+        
+        /* 3D эффекты */
+        .game-3d-container {
+            perspective: 1000px;
+            perspective-origin: center center;
+            transform-style: preserve-3d;
+        }
+        
+        .avatar-3d {
+            transform-style: preserve-3d;
+            animation: rotate3d 3s infinite linear;
+        }
+        
+        @keyframes rotate3d {
+            0% { transform: rotateY(0deg) rotateX(5deg); }
+            50% { transform: rotateY(180deg) rotateX(-5deg); }
+            100% { transform: rotateY(360deg) rotateX(5deg); }
+        }
+        
+        .race-track {
+            width: 100%;
+            height: 400px;
+            background: linear-gradient(to bottom, #87ceeb 0%, #2e7d32 50%, #1b5e20 100%);
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+            margin: 2rem 0;
+            border: 5px solid #1b5e20;
+            perspective: 800px;
+            transform-style: preserve-3d;
+        }
+        
+        .race-car {
+            position: absolute;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%) translateZ(30px) rotateY(0deg);
+            font-size: 4rem;
+            transition: left 0.1s, transform 0.1s;
+            transform-style: preserve-3d;
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));
+        }
+        
+        .race-car.moving-left {
+            transform: translateX(-50%) translateZ(30px) rotateY(-15deg);
+        }
+        
+        .race-car.moving-right {
+            transform: translateX(-50%) translateZ(30px) rotateY(15deg);
+        }
+        
+        .race-obstacle {
+            position: absolute;
+            top: -50px;
+            font-size: 3rem;
+            animation: fall linear;
+        }
+        
+        @keyframes fall {
+            to { top: 100%; }
+        }
+        
+        .race-controls {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+        
+        .race-btn {
+            padding: 1rem 2rem;
+            background: #d52b1e;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        
+        .race-btn:active {
+            transform: scale(0.95);
+        }
+        
+        /* Игра Битва */
+        .battle-game {
+            text-align: center;
+        }
+        
+        .battle-arena {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 2rem 0;
+            gap: 2rem;
+            perspective: 1200px;
+            transform-style: preserve-3d;
+        }
+        
+        .battle-player {
+            text-align: center;
+            transform-style: preserve-3d;
+        }
+        
+        .battle-player-3d {
+            transform-style: preserve-3d;
+            animation: battleIdle 2s ease-in-out infinite;
+        }
+        
+        @keyframes battleIdle {
+            0%, 100% { transform: translateY(0) rotateY(0deg); }
+            50% { transform: translateY(-10px) rotateY(5deg); }
+        }
+        
+        .battle-player.attacking {
+            animation: battleAttack 0.5s ease-out;
+        }
+        
+        @keyframes battleAttack {
+            0% { transform: translateX(0) rotateY(0deg); }
+            50% { transform: translateX(30px) rotateY(15deg) scale(1.2); }
+            100% { transform: translateX(0) rotateY(0deg); }
+        }
+        
+        .battle-health {
+            width: 200px;
+            height: 30px;
+            background: #f0f0f0;
+            border-radius: 15px;
+            margin: 1rem auto;
+            overflow: hidden;
+            border: 2px solid #333;
+        }
+        
+        .battle-health-bar {
+            height: 100%;
+            background: #4caf50;
+            transition: width 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .battle-avatar {
+            font-size: 5rem;
+            margin: 1rem 0;
+        }
+        
+        .battle-btn {
+            padding: 1rem 2rem;
+            background: #d52b1e;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 0.5rem;
+            transition: all 0.3s;
+        }
+        
+        .battle-btn:hover {
+            background: #ff3d2e;
+            transform: translateY(-2px);
+        }
+        
+        .battle-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        /* Игра Стрельба */
+        .shooting-game {
+            text-align: center;
+        }
+        
+        .shooting-range {
+            width: 100%;
+            height: 400px;
+            background: linear-gradient(to bottom, #87ceeb 0%, #98fb98 100%);
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+            margin: 2rem 0;
+            border: 3px solid #333;
+        }
+        
+        .shooting-target {
+            position: absolute;
+            font-size: 4rem;
+            cursor: crosshair;
+            transition: all 0.1s;
+        }
+        
+        .shooting-target:hover {
+            transform: scale(1.1);
+        }
+        
+        .shooting-target.hit {
+            animation: explode 0.5s;
+        }
+        
+        @keyframes explode {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.5); opacity: 0.5; }
+            100% { transform: scale(2); opacity: 0; }
+        }
+        
+        /* Игра Замок */
+        .castle-game {
+            text-align: center;
+        }
+        
+        .castle-map {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 0.5rem;
+            max-width: 600px;
+            margin: 2rem auto;
+        }
+        
+        .castle-room {
+            aspect-ratio: 1;
+            background: #8b7355;
+            border: 2px solid #5d4e37;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            transition: all 0.3s;
+        }
+        
+        .castle-room:hover {
+            background: #a0826d;
+            transform: scale(1.05);
+        }
+        
+        .castle-room.visited {
+            background: #6b8e23;
+        }
+        
+        .castle-room.treasure {
+            background: #ffd700;
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Главная страница -->
+    <div class="container" id="mainPage">
+        <h1>Рублокс</h1>
+        <p>Добро пожаловать на новый роблокс в россии!</p>
+        <div class="buttons">
+            <a href="#" class="btn btn-download">Скачать</a>
+            <a href="#" class="btn btn-web" id="webVersionBtn">Веб версия</a>
+        </div>
+    </div>
+    
+    <!-- Модальное окно регистрации -->
+    <div class="modal" id="registerModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Регистрация</h2>
+                <p>Введите вашу электронную почту</p>
+            </div>
+            <button class="btn-google" id="googleSignInBtn">
+                <svg class="google-icon" viewBox="0 0 24 24">
+                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                </svg>
+                Войти через Google
+            </button>
+            
+            <div class="divider">или</div>
+            
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="email">Электронная почта</label>
+                    <input type="email" id="email" name="email" required placeholder="example@mail.ru">
+                </div>
+                <div class="form-group">
+                    <label for="password">Пароль</label>
+                    <input type="password" id="password" name="password" required placeholder="Введите пароль">
+                </div>
+                <button type="submit" class="btn-submit">Зарегистрироваться</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Меню игры -->
+    <div class="game-menu" id="gameMenu">
+        <div class="game-header">
+            <h2>Рублокс</h2>
+            <div class="user-info">
+                <span class="user-email" id="userEmail"></span>
+                <button class="btn-logout" id="logoutBtn">Выйти</button>
+            </div>
+        </div>
+        
+        <div class="menu-tabs">
+            <button class="tab-btn active" data-tab="games">Игры</button>
+            <button class="tab-btn" data-tab="avatar">Редактор аватаров</button>
+        </div>
+        
+        <div class="tab-content active" id="gamesTab">
+            <div class="category-filters">
+                <button class="category-filter-btn active" data-category="all">Все игры</button>
+                <button class="category-filter-btn" data-category="3d">3D игры</button>
+                <button class="category-filter-btn" data-category="2d">2D игры</button>
+            </div>
+            <div class="games-grid">
+                <div class="game-card" data-game="racing" data-category="3d">
+                    <div class="game-card-image">🚗</div>
+                    <div class="game-card-info">
+                        <div class="game-card-title">Гонки</div>
+                        <div class="game-card-description">Гоняйте на суперкарах</div>
+                        <div style="font-size: 0.8rem; color: #d52b1e; margin-top: 0.5rem;">3D</div>
+                    </div>
+                </div>
+                <div class="game-card" data-game="battle" data-category="3d">
+                    <div class="game-card-image">⚔️</div>
+                    <div class="game-card-info">
+                        <div class="game-card-title">Битва</div>
+                        <div class="game-card-description">Сражайтесь с друзьями</div>
+                        <div style="font-size: 0.8rem; color: #d52b1e; margin-top: 0.5rem;">3D</div>
+                    </div>
+                </div>
+                <div class="game-card" data-game="hide-seek" data-category="2d">
+                    <div class="game-card-image">🎮</div>
+                    <div class="game-card-info">
+                        <div class="game-card-title">Обея</div>
+                        <div class="game-card-description">Классическая игра в прятки</div>
+                        <div style="font-size: 0.8rem; color: #0039a6; margin-top: 0.5rem;">2D</div>
+                    </div>
+                </div>
+                <div class="game-card" data-game="house" data-category="2d">
+                    <div class="game-card-image">🏠</div>
+                    <div class="game-card-info">
+                        <div class="game-card-title">Дом</div>
+                        <div class="game-card-description">Стройте и украшайте свой дом</div>
+                        <div style="font-size: 0.8rem; color: #0039a6; margin-top: 0.5rem;">2D</div>
+                    </div>
+                </div>
+                <div class="game-card" data-game="shooting" data-category="2d">
+                    <div class="game-card-image">🎯</div>
+                    <div class="game-card-info">
+                        <div class="game-card-title">Стрельба</div>
+                        <div class="game-card-description">Точная стрельба и тактика</div>
+                        <div style="font-size: 0.8rem; color: #0039a6; margin-top: 0.5rem;">2D</div>
+                    </div>
+                </div>
+                <div class="game-card" data-game="castle" data-category="2d">
+                    <div class="game-card-image">🏰</div>
+                    <div class="game-card-info">
+                        <div class="game-card-title">Замок</div>
+                        <div class="game-card-description">Исследуйте древний замок</div>
+                        <div style="font-size: 0.8rem; color: #0039a6; margin-top: 0.5rem;">2D</div>
+                    </div>
+                </div>
+                <div class="game-card" data-game="adventure" data-category="3d">
+                    <div class="game-card-image">🗺️</div>
+                    <div class="game-card-info">
+                        <div class="game-card-title">Приключения</div>
+                        <div class="game-card-description">Исследуйте 3D мир</div>
+                        <div style="font-size: 0.8rem; color: #d52b1e; margin-top: 0.5rem;">3D</div>
+                    </div>
+                </div>
+                <div class="game-card" data-game="platform" data-category="2d">
+                    <div class="game-card-image">🦘</div>
+                    <div class="game-card-info">
+                        <div class="game-card-title">Платформер</div>
+                        <div class="game-card-description">Классический 2D платформер</div>
+                        <div style="font-size: 0.8rem; color: #0039a6; margin-top: 0.5rem;">2D</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="avatarTab">
+            <div class="avatar-editor">
+                <div class="avatar-preview" id="avatarPreview">👤</div>
+                <div class="avatar-controls">
+                    <div class="control-group">
+                        <label>Цвет кожи</label>
+                        <input type="range" id="skinColor" min="0" max="360" value="30">
+                    </div>
+                    <div class="control-group">
+                        <label>Прическа</label>
+                        <select id="hairStyle">
+                            <option value="short">Короткая</option>
+                            <option value="long">Длинная</option>
+                            <option value="curly">Кудрявая</option>
+                            <option value="spiky">Ежик</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label>Цвет волос</label>
+                        <input type="color" id="hairColor" value="#8B4513">
+                    </div>
+                    <div class="control-group">
+                        <label>Одежда</label>
+                        <select id="clothing">
+                            <option value="casual">Повседневная</option>
+                            <option value="formal">Формальная</option>
+                            <option value="sport">Спортивная</option>
+                            <option value="costume">Костюм</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Игровая область -->
+    <div class="game-view" id="gameView">
+        <div class="game-view-header">
+            <h2 id="gameTitle">Игра</h2>
+            <button class="btn-back" id="backToMenuBtn">← Назад к играм</button>
+        </div>
+        <div class="game-area" id="gameArea">
+            <!-- Игровой контент будет загружаться здесь -->
+        </div>
+    </div>
+    
+    <script>
+        // Проверка авторизации при загрузке
+        window.addEventListener('DOMContentLoaded', () => {
+            const userEmail = localStorage.getItem('rublox_user_email');
+            if (userEmail) {
+                showGameMenu(userEmail);
+            }
+        });
+        
+        // Открытие модального окна регистрации
+        document.getElementById('webVersionBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            const userEmail = localStorage.getItem('rublox_user_email');
+            if (userEmail) {
+                showGameMenu(userEmail);
+            } else {
+                document.getElementById('registerModal').classList.add('active');
+            }
+        });
+        
+        // Обработка входа через Google
+        document.getElementById('googleSignInBtn').addEventListener('click', () => {
+            const btn = document.getElementById('googleSignInBtn');
+            const originalText = btn.innerHTML;
+            
+            // Показываем индикатор загрузки
+            btn.innerHTML = '<span>Загрузка...</span>';
+            btn.disabled = true;
+            
+            // Для полноценной работы нужен Google Client ID
+            // Замените 'YOUR_GOOGLE_CLIENT_ID' на реальный Client ID из Google Cloud Console
+            // const GOOGLE_CLIENT_ID = 'YOUR_GOOGLE_CLIENT_ID';
+            
+            // Демо-версия: симуляция входа через Google
+            // В реальном приложении используйте Google Identity Services:
+            /*
+            google.accounts.id.initialize({
+                client_id: GOOGLE_CLIENT_ID,
+                callback: handleGoogleSignIn
+            });
+            google.accounts.id.prompt();
+            */
+            
+            // Симуляция входа через Google (для демо)
+            // Имитируем задержку запроса
+            setTimeout(() => {
+                handleGoogleSignIn({
+                    credential: JSON.stringify({
+                        email: 'user@gmail.com',
+                        name: 'Google User',
+                        picture: ''
+                    })
+                });
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }, 1000);
+        });
+        
+        // Обработчик успешного входа через Google
+        function handleGoogleSignIn(response) {
+            try {
+                // В реальном приложении декодируйте JWT токен:
+                // const payload = JSON.parse(atob(response.credential.split('.')[1]));
+                // const email = payload.email;
+                
+                // Для демо используем симулированные данные
+                const demoEmail = 'user@gmail.com';
+                
+                // Сохраняем email в localStorage
+                localStorage.setItem('rublox_user_email', demoEmail);
+                localStorage.setItem('rublox_auth_method', 'google');
+                
+                // Закрываем модальное окно
+                document.getElementById('registerModal').classList.remove('active');
+                
+                // Показываем меню игры
+                showGameMenu(demoEmail);
+            } catch (error) {
+                console.error('Ошибка входа через Google:', error);
+                alert('Ошибка входа через Google. Попробуйте еще раз.');
+            }
+        }
+        
+        // Обработка формы регистрации
+        document.getElementById('registerForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            if (email && password) {
+                // Сохраняем email в localStorage
+                localStorage.setItem('rublox_user_email', email);
+                localStorage.setItem('rublox_auth_method', 'email');
+                
+                // Закрываем модальное окно
+                document.getElementById('registerModal').classList.remove('active');
+                
+                // Показываем меню игры
+                showGameMenu(email);
+            }
+        });
+        
+        // Показ меню игры
+        function showGameMenu(email) {
+            document.getElementById('mainPage').classList.add('hidden');
+            document.getElementById('gameMenu').classList.add('active');
+            document.getElementById('userEmail').textContent = email;
+        }
+        
+        // Выход из аккаунта
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('rublox_user_email');
+            document.getElementById('gameMenu').classList.remove('active');
+            document.getElementById('mainPage').classList.remove('hidden');
+        });
+        
+        // Переключение вкладок
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Убираем активный класс у всех кнопок и контента
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                // Добавляем активный класс к выбранной кнопке и контенту
+                btn.classList.add('active');
+                const tabId = btn.getAttribute('data-tab') + 'Tab';
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+        
+        // Фильтрация игр по категориям
+        document.querySelectorAll('.category-filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Убираем активный класс у всех кнопок фильтров
+                document.querySelectorAll('.category-filter-btn').forEach(b => b.classList.remove('active'));
+                
+                // Добавляем активный класс к выбранной кнопке
+                btn.classList.add('active');
+                
+                const category = btn.getAttribute('data-category');
+                filterGamesByCategory(category);
+            });
+        });
+        
+        function filterGamesByCategory(category) {
+            const gameCards = document.querySelectorAll('.game-card');
+            
+            gameCards.forEach(card => {
+                const cardCategory = card.getAttribute('data-category');
+                
+                if (category === 'all') {
+                    // Показываем все игры
+                    card.classList.remove('hidden');
+                } else if (cardCategory === category) {
+                    // Показываем игры выбранной категории
+                    card.classList.remove('hidden');
+                } else {
+                    // Скрываем игры других категорий
+                    card.classList.add('hidden');
+                }
+            });
+        }
+        
+        // Редактор аватаров
+        const skinColorInput = document.getElementById('skinColor');
+        const hairColorInput = document.getElementById('hairColor');
+        const hairStyleSelect = document.getElementById('hairStyle');
+        const clothingSelect = document.getElementById('clothing');
+        const avatarPreview = document.getElementById('avatarPreview');
+        
+        // Словари для визуальных элементов
+        const hairStyles = {
+            short: { emoji: '💇', style: 'normal' },
+            long: { emoji: '💇‍♀️', style: 'long' },
+            curly: { emoji: '👩‍🦱', style: 'curly' },
+            spiky: { emoji: '👨‍🦲', style: 'spiky' }
+        };
+        
+        const clothingStyles = {
+            casual: { emoji: '👕', name: 'Повседневная' },
+            formal: { emoji: '👔', name: 'Формальная' },
+            sport: { emoji: '👟', name: 'Спортивная' },
+            costume: { emoji: '🎭', name: 'Костюм' }
+        };
+        
+        // Обработчики событий для всех элементов управления
+        skinColorInput.addEventListener('input', updateAvatar);
+        hairColorInput.addEventListener('input', updateAvatar);
+        hairStyleSelect.addEventListener('change', updateAvatar);
+        clothingSelect.addEventListener('change', updateAvatar);
+        
+        // Инициализация аватара при загрузке
+        updateAvatar();
+        
+        function updateAvatar() {
+            const skinHue = skinColorInput.value;
+            const hairColor = hairColorInput.value;
+            const hairStyle = hairStyleSelect.value;
+            const clothing = clothingSelect.value;
+            
+            // Сохраняем данные аватара в localStorage
+            const avatarData = {
+                skinHue: skinHue,
+                hairColor: hairColor,
+                hairStyle: hairStyle,
+                clothing: clothing
+            };
+            localStorage.setItem('rublox_avatar_data', JSON.stringify(avatarData));
+            
+            // Обновляем цвет фона (цвет кожи) - более реалистичный оттенок
+            const skinLightness = 60 + (skinHue / 360) * 20; // От 60% до 80%
+            const skinSaturation = 40 + (skinHue / 360) * 30; // От 40% до 70%
+            avatarPreview.style.background = `linear-gradient(135deg, hsl(${skinHue}, ${skinSaturation}%, ${skinLightness}%) 0%, hsl(${skinHue}, ${skinSaturation}%, ${skinLightness - 10}%) 100%)`;
+            
+            // Создаем HTML для аватара
+            let avatarHTML = '';
+            
+            // Прическа - используем разные эмодзи в зависимости от стиля
+            const hairData = hairStyles[hairStyle] || hairStyles.short;
+            // Показываем цвет волос через индикатор рядом с прической
+            const hairColorIndicator = getHairColorEmoji(hairColor);
+            avatarHTML += `<div class="avatar-hair" title="Цвет: ${hairColor}">${hairData.emoji} ${hairColorIndicator}</div>`;
+            
+            // Лицо (меняется в зависимости от цвета кожи)
+            const faceEmoji = getFaceEmoji(skinHue);
+            avatarHTML += `<div class="avatar-face">${faceEmoji}</div>`;
+            
+            // Глаза
+            avatarHTML += `<div class="avatar-eyes">👀</div>`;
+            
+            // Одежда
+            const clothingData = clothingStyles[clothing] || clothingStyles.casual;
+            avatarHTML += `<div class="avatar-body" title="${clothingData.name}">${clothingData.emoji}</div>`;
+            
+            avatarPreview.innerHTML = avatarHTML;
+        }
+        
+        // Функция для получения данных аватара
+        function getAvatarData() {
+            const saved = localStorage.getItem('rublox_avatar_data');
+            if (saved) {
+                return JSON.parse(saved);
+            }
+            // Значения по умолчанию
+            return {
+                skinHue: 30,
+                hairColor: '#8B4513',
+                hairStyle: 'short',
+                clothing: 'casual'
+            };
+        }
+        
+        // Функция для создания 3D аватара
+        function create3DAvatar(container, size = 100) {
+            const avatarData = getAvatarData();
+            const hairData = hairStyles[avatarData.hairStyle] || hairStyles.short;
+            const clothingData = clothingStyles[avatarData.clothing] || clothingStyles.casual;
+            const faceEmoji = getFaceEmoji(avatarData.skinHue);
+            
+            const skinLightness = 60 + (avatarData.skinHue / 360) * 20;
+            const skinSaturation = 40 + (avatarData.skinHue / 360) * 30;
+            const skinColor = `hsl(${avatarData.skinHue}, ${skinSaturation}%, ${skinLightness}%)`;
+            
+            return `
+                <div class="avatar-3d" style="
+                    width: ${size}px;
+                    height: ${size * 1.5}px;
+                    position: relative;
+                    transform-style: preserve-3d;
+                    perspective: 1000px;
+                    margin: 0 auto;
+                ">
+                    <div class="avatar-3d-hair" style="
+                        position: absolute;
+                        top: 0;
+                        left: 50%;
+                        transform: translateX(-50%) translateZ(20px);
+                        font-size: ${size * 0.4}px;
+                        color: ${avatarData.hairColor};
+                        z-index: 3;
+                        filter: drop-shadow(0 5px 10px rgba(0,0,0,0.5));
+                    ">${hairData.emoji}</div>
+                    <div class="avatar-3d-face" style="
+                        position: absolute;
+                        top: ${size * 0.3}px;
+                        left: 50%;
+                        transform: translateX(-50%) translateZ(30px);
+                        font-size: ${size * 0.5}px;
+                        z-index: 2;
+                        filter: drop-shadow(0 5px 10px rgba(0,0,0,0.5));
+                    ">${faceEmoji}</div>
+                    <div class="avatar-3d-body" style="
+                        position: absolute;
+                        bottom: 0;
+                        left: 50%;
+                        transform: translateX(-50%) translateZ(10px);
+                        font-size: ${size * 0.4}px;
+                        z-index: 1;
+                        filter: drop-shadow(0 5px 10px rgba(0,0,0,0.5));
+                    ">${clothingData.emoji}</div>
+                </div>
+            `;
+        }
+        
+        function getFaceEmoji(hue) {
+            // Разные эмодзи лица в зависимости от оттенка кожи
+            if (hue < 30) {
+                return '😊'; // Светлый оттенок
+            } else if (hue < 60) {
+                return '😃'; // Средний оттенок
+            } else if (hue < 120) {
+                return '🙂'; // Оливковый оттенок
+            } else if (hue < 180) {
+                return '😌'; // Зеленоватый оттенок
+            } else if (hue < 240) {
+                return '😎'; // Голубоватый оттенок
+            } else if (hue < 300) {
+                return '🤔'; // Фиолетовый оттенок
+            } else {
+                return '😊'; // Розоватый оттенок
+            }
+        }
+        
+        function getHairColorEmoji(hexColor) {
+            // Определяем примерный цвет волос и показываем соответствующий индикатор
+            const rgb = hexToRgb(hexColor);
+            const brightness = (rgb.r + rgb.g + rgb.b) / 3;
+            
+            if (brightness > 200) {
+                return '👱'; // Светлые волосы
+            } else if (brightness > 150) {
+                return '👱‍♀️'; // Средние волосы
+            } else if (brightness > 100) {
+                return '👨'; // Темные волосы
+            } else {
+                return '👨‍🦲'; // Очень темные/черные волосы
+            }
+        }
+        
+        function hexToRgb(hex) {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+            } : { r: 139, g: 69, b: 19 }; // По умолчанию коричневый
+        }
+        
+        // Обработка кликов на карточки игр
+        document.querySelectorAll('.game-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const gameType = card.getAttribute('data-game');
+                const gameTitle = card.querySelector('.game-card-title').textContent;
+                startGame(gameType, gameTitle);
+            });
+        });
+        
+        // Кнопка "Назад к играм"
+        document.getElementById('backToMenuBtn').addEventListener('click', () => {
+            document.getElementById('gameView').classList.remove('active');
+            document.getElementById('gameMenu').classList.add('active');
+        });
+        
+        // Функция запуска игры
+        function startGame(gameType, gameTitle) {
+            document.getElementById('gameTitle').textContent = gameTitle;
+            document.getElementById('gameMenu').classList.remove('active');
+            document.getElementById('gameView').classList.add('active');
+            
+            const gameArea = document.getElementById('gameArea');
+            gameArea.innerHTML = '';
+            
+            switch(gameType) {
+                case 'hide-seek':
+                    loadHideSeekGame(gameArea);
+                    break;
+                case 'house':
+                    loadHouseGame(gameArea);
+                    break;
+                case 'racing':
+                    loadRacingGame(gameArea);
+                    break;
+                case 'battle':
+                    loadBattleGame(gameArea);
+                    break;
+                case 'shooting':
+                    loadShootingGame(gameArea);
+                    break;
+                case 'castle':
+                    loadCastleGame(gameArea);
+                    break;
+                case 'adventure':
+                    loadAdventureGame(gameArea);
+                    break;
+                case 'platform':
+                    loadPlatformGame(gameArea);
+                    break;
+                default:
+                    gameArea.innerHTML = '<h3>Игра в разработке</h3><p>Эта игра скоро будет доступна!</p>';
+            }
+        }
+        
+        // Игра Обея (Прятки)
+        function loadHideSeekGame(container) {
+            let score = 0;
+            let found = 0;
+            const total = 3;
+            const hiddenIndexes = [];
+            
+            // Генерируем случайные позиции для скрытых объектов
+            while(hiddenIndexes.length < total) {
+                const idx = Math.floor(Math.random() * 16);
+                if (!hiddenIndexes.includes(idx)) {
+                    hiddenIndexes.push(idx);
+                }
+            }
+            
+            container.innerHTML = `
+                <div class="hide-seek-game">
+                    <h3>Найдите всех спрятанных!</h3>
+                    <div class="game-score">Найдено: ${found}/${total} | Счет: ${score}</div>
+                    <div class="hide-seek-grid" id="hideSeekGrid"></div>
+                </div>
+            `;
+            
+            const grid = document.getElementById('hideSeekGrid');
+            for (let i = 0; i < 16; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'hide-seek-cell';
+                cell.dataset.index = i;
+                if (hiddenIndexes.includes(i)) {
+                    cell.dataset.hidden = 'true';
+                }
+                cell.addEventListener('click', () => {
+                    if (cell.dataset.hidden === 'true' && !cell.classList.contains('found')) {
+                        cell.classList.add('found');
+                        cell.textContent = '🎯';
+                        found++;
+                        score += 100;
+                        updateScore();
+                        if (found === total) {
+                            setTimeout(() => {
+                                alert(`Поздравляем! Вы нашли всех! Финальный счет: ${score}`);
+                                resetHideSeek();
+                            }, 500);
+                        }
+                    } else if (!cell.classList.contains('found') && !cell.classList.contains('wrong')) {
+                        cell.classList.add('wrong');
+                        cell.textContent = '❌';
+                        score = Math.max(0, score - 10);
+                        updateScore();
+                        setTimeout(() => {
+                            cell.classList.remove('wrong');
+                            cell.textContent = '';
+                        }, 1000);
+                    }
+                });
+                grid.appendChild(cell);
+            }
+            
+            function updateScore() {
+                document.querySelector('.game-score').textContent = `Найдено: ${found}/${total} | Счет: ${score}`;
+            }
+            
+            function resetHideSeek() {
+                found = 0;
+                score = 0;
+                loadHideSeekGame(container);
+            }
+        }
+        
+        // Игра Дом
+        function loadHouseGame(container) {
+            const houseParts = [];
+            
+            container.innerHTML = `
+                <div class="house-builder">
+                    <h3>Постройте свой дом!</h3>
+                    <div class="house-preview" id="housePreview"></div>
+                    <div class="house-controls">
+                        <button class="house-btn" data-part="🏠">Добавить дом</button>
+                        <button class="house-btn" data-part="🌳">Добавить дерево</button>
+                        <button class="house-btn" data-part="🚗">Добавить машину</button>
+                        <button class="house-btn" data-part="🌻">Добавить цветок</button>
+                        <button class="house-btn" data-part="🐕">Добавить собаку</button>
+                        <button class="house-btn" id="clearHouse">Очистить</button>
+                    </div>
+                </div>
+            `;
+            
+            const preview = document.getElementById('housePreview');
+            document.querySelectorAll('.house-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    if (btn.id === 'clearHouse') {
+                        houseParts.length = 0;
+                        preview.innerHTML = '';
+                    } else {
+                        const part = btn.dataset.part;
+                        houseParts.push(part);
+                        const partEl = document.createElement('div');
+                        partEl.className = 'house-part';
+                        partEl.textContent = part;
+                        preview.appendChild(partEl);
+                    }
+                });
+            });
+        }
+        
+        // Игра Гонки (3D)
+        function loadRacingGame(container) {
+            let carPosition = 50;
+            let obstacles = [];
+            let score = 0;
+            let gameRunning = false;
+            let gameInterval;
+            const avatarHTML = create3DAvatar(null, 80);
+            
+            container.innerHTML = `
+                <div class="racing-game">
+                    <h3>3D Гонки! Управляйте своим аватаром!</h3>
+                    <div class="game-score">Счет: ${score}</div>
+                    <div class="race-track game-3d-container" id="raceTrack">
+                        <div class="race-car" id="raceCar" style="left: ${carPosition}%">
+                            ${avatarHTML}
+                        </div>
+                    </div>
+                    <div class="race-controls">
+                        <button class="race-btn" id="startRace">Начать</button>
+                        <button class="race-btn" id="leftBtn">←</button>
+                        <button class="race-btn" id="rightBtn">→</button>
+                    </div>
+                    <p>Используйте стрелки ← → для управления вашим аватаром</p>
+                </div>
+            `;
+            
+            const track = document.getElementById('raceTrack');
+            const car = document.getElementById('raceCar');
+            const startBtn = document.getElementById('startRace');
+            const leftBtn = document.getElementById('leftBtn');
+            const rightBtn = document.getElementById('rightBtn');
+            
+            function startGame() {
+                if (gameRunning) return;
+                gameRunning = true;
+                startBtn.disabled = true;
+                
+                gameInterval = setInterval(() => {
+                    // Создаем препятствие
+                    if (Math.random() < 0.3) {
+                        const obstacle = document.createElement('div');
+                        obstacle.className = 'race-obstacle';
+                        obstacle.textContent = '🪨';
+                        obstacle.style.left = Math.random() * 80 + 10 + '%';
+                        obstacle.style.animationDuration = (Math.random() * 2 + 1) + 's';
+                        track.appendChild(obstacle);
+                        obstacles.push(obstacle);
+                        
+                        // Проверка столкновения
+                        setTimeout(() => {
+                            const carRect = car.getBoundingClientRect();
+                            const obsRect = obstacle.getBoundingClientRect();
+                            if (Math.abs(carRect.left - obsRect.left) < 50 && 
+                                Math.abs(carRect.top - obsRect.top) < 100) {
+                                endGame();
+                            } else {
+                                score += 10;
+                                document.querySelector('.game-score').textContent = `Счет: ${score}`;
+                            }
+                            obstacle.remove();
+                            obstacles = obstacles.filter(o => o !== obstacle);
+                        }, 2000);
+                    }
+                }, 500);
+            }
+            
+            function endGame() {
+                gameRunning = false;
+                clearInterval(gameInterval);
+                obstacles.forEach(o => o.remove());
+                obstacles = [];
+                alert(`Игра окончена! Ваш счет: ${score}`);
+                startBtn.disabled = false;
+                score = 0;
+                carPosition = 50;
+                car.style.left = carPosition + '%';
+            }
+            
+            startBtn.addEventListener('click', startGame);
+            leftBtn.addEventListener('mousedown', () => {
+                if (!gameRunning) return;
+                car.classList.add('moving-left');
+                const moveLeft = setInterval(() => {
+                    if (carPosition > 10) {
+                        carPosition -= 2;
+                        car.style.left = carPosition + '%';
+                    }
+                }, 50);
+                leftBtn.addEventListener('mouseup', () => {
+                    clearInterval(moveLeft);
+                    car.classList.remove('moving-left');
+                }, { once: true });
+            });
+            rightBtn.addEventListener('mousedown', () => {
+                if (!gameRunning) return;
+                car.classList.add('moving-right');
+                const moveRight = setInterval(() => {
+                    if (carPosition < 90) {
+                        carPosition += 2;
+                        car.style.left = carPosition + '%';
+                    }
+                }, 50);
+                rightBtn.addEventListener('mouseup', () => {
+                    clearInterval(moveRight);
+                    car.classList.remove('moving-right');
+                }, { once: true });
+            });
+            
+            // Клавиатурное управление
+            document.addEventListener('keydown', (e) => {
+                if (!gameRunning) return;
+                if (e.key === 'ArrowLeft' && carPosition > 10) {
+                    carPosition -= 5;
+                    car.style.left = carPosition + '%';
+                    car.classList.add('moving-left');
+                    setTimeout(() => car.classList.remove('moving-left'), 200);
+                }
+                if (e.key === 'ArrowRight' && carPosition < 90) {
+                    carPosition += 5;
+                    car.style.left = carPosition + '%';
+                    car.classList.add('moving-right');
+                    setTimeout(() => car.classList.remove('moving-right'), 200);
+                }
+            });
+        }
+        
+        // Игра Битва (3D)
+        function loadBattleGame(container) {
+            let playerHealth = 100;
+            let enemyHealth = 100;
+            let gameOver = false;
+            const playerAvatarHTML = create3DAvatar(null, 120);
+            
+            container.innerHTML = `
+                <div class="battle-game">
+                    <h3>3D Битва! Сражайтесь своим аватаром!</h3>
+                    <div class="battle-arena game-3d-container">
+                        <div class="battle-player battle-player-3d" id="playerAvatar">
+                            <div class="battle-avatar">${playerAvatarHTML}</div>
+                            <div style="margin-top: 1rem; font-weight: 600;">Ваш аватар</div>
+                            <div class="battle-health">
+                                <div class="battle-health-bar" id="playerHealth" style="width: ${playerHealth}%">${playerHealth}%</div>
+                            </div>
+                        </div>
+                        <div class="battle-player">
+                            <div class="battle-avatar" style="font-size: 5rem; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));">👾</div>
+                            <div style="margin-top: 1rem; font-weight: 600;">Враг</div>
+                            <div class="battle-health">
+                                <div class="battle-health-bar" id="enemyHealth" style="width: ${enemyHealth}%">${enemyHealth}%</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="text-align: center; margin-top: 2rem;">
+                        <button class="battle-btn" id="attackBtn">Атаковать</button>
+                        <button class="battle-btn" id="healBtn">Лечиться</button>
+                        <button class="battle-btn" id="resetBtn">Новая битва</button>
+                    </div>
+                </div>
+            `;
+            
+            const attackBtn = document.getElementById('attackBtn');
+            const healBtn = document.getElementById('healBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            const playerHealthBar = document.getElementById('playerHealth');
+            const enemyHealthBar = document.getElementById('enemyHealth');
+            const playerAvatar = document.getElementById('playerAvatar');
+            
+            function updateHealth() {
+                playerHealthBar.style.width = playerHealth + '%';
+                playerHealthBar.textContent = playerHealth + '%';
+                enemyHealthBar.style.width = enemyHealth + '%';
+                enemyHealthBar.textContent = enemyHealth + '%';
+                
+                if (playerHealth <= 0) {
+                    gameOver = true;
+                    attackBtn.disabled = true;
+                    healBtn.disabled = true;
+                    alert('Вы проиграли!');
+                } else if (enemyHealth <= 0) {
+                    gameOver = true;
+                    attackBtn.disabled = true;
+                    healBtn.disabled = true;
+                    alert('Вы победили!');
+                }
+            }
+            
+            attackBtn.addEventListener('click', () => {
+                if (gameOver) return;
+                // Анимация атаки
+                playerAvatar.classList.add('attacking');
+                setTimeout(() => playerAvatar.classList.remove('attacking'), 500);
+                
+                const damage = Math.floor(Math.random() * 20) + 10;
+                enemyHealth = Math.max(0, enemyHealth - damage);
+                updateHealth();
+                
+                // Враг атакует
+                setTimeout(() => {
+                    if (!gameOver) {
+                        const enemyDamage = Math.floor(Math.random() * 15) + 5;
+                        playerHealth = Math.max(0, playerHealth - enemyDamage);
+                        updateHealth();
+                    }
+                }, 500);
+            });
+            
+            healBtn.addEventListener('click', () => {
+                if (gameOver) return;
+                const heal = Math.floor(Math.random() * 15) + 10;
+                playerHealth = Math.min(100, playerHealth + heal);
+                updateHealth();
+                
+                // Враг атакует
+                setTimeout(() => {
+                    if (!gameOver) {
+                        const enemyDamage = Math.floor(Math.random() * 15) + 5;
+                        playerHealth = Math.max(0, playerHealth - enemyDamage);
+                        updateHealth();
+                    }
+                }, 500);
+            });
+            
+            resetBtn.addEventListener('click', () => {
+                playerHealth = 100;
+                enemyHealth = 100;
+                gameOver = false;
+                attackBtn.disabled = false;
+                healBtn.disabled = false;
+                updateHealth();
+            });
+        }
+        
+        // Игра Стрельба
+        function loadShootingGame(container) {
+            let score = 0;
+            let timeLeft = 30;
+            let gameRunning = false;
+            let targetInterval;
+            let timerInterval;
+            
+            container.innerHTML = `
+                <div class="shooting-game">
+                    <h3>Стрельба по мишеням!</h3>
+                    <div class="game-score">Счет: ${score} | Время: ${timeLeft}с</div>
+                    <div class="shooting-range" id="shootingRange"></div>
+                    <button class="race-btn" id="startShooting">Начать</button>
+                </div>
+            `;
+            
+            const range = document.getElementById('shootingRange');
+            const startBtn = document.getElementById('startShooting');
+            
+            function createTarget() {
+                const target = document.createElement('div');
+                target.className = 'shooting-target';
+                target.textContent = '🎯';
+                target.style.left = Math.random() * 80 + 10 + '%';
+                target.style.top = Math.random() * 60 + 10 + '%';
+                
+                target.addEventListener('click', () => {
+                    if (!gameRunning) return;
+                    target.classList.add('hit');
+                    score += 10;
+                    document.querySelector('.game-score').textContent = `Счет: ${score} | Время: ${timeLeft}с`;
+                    setTimeout(() => target.remove(), 500);
+                });
+                
+                range.appendChild(target);
+                
+                setTimeout(() => {
+                    if (target.parentNode) {
+                        target.remove();
+                    }
+                }, 2000);
+            }
+            
+            function startGame() {
+                if (gameRunning) return;
+                gameRunning = true;
+                score = 0;
+                timeLeft = 30;
+                startBtn.disabled = true;
+                
+                targetInterval = setInterval(createTarget, 1000);
+                
+                timerInterval = setInterval(() => {
+                    timeLeft--;
+                    document.querySelector('.game-score').textContent = `Счет: ${score} | Время: ${timeLeft}с`;
+                    
+                    if (timeLeft <= 0) {
+                        endGame();
+                    }
+                }, 1000);
+            }
+            
+            function endGame() {
+                gameRunning = false;
+                clearInterval(targetInterval);
+                clearInterval(timerInterval);
+                range.innerHTML = '';
+                startBtn.disabled = false;
+                alert(`Игра окончена! Ваш счет: ${score}`);
+            }
+            
+            startBtn.addEventListener('click', startGame);
+        }
+        
+        // Игра Замок
+        function loadCastleGame(container) {
+            const rooms = [];
+            const totalRooms = 25;
+            const treasureRoom = Math.floor(Math.random() * totalRooms);
+            let visited = new Set();
+            
+            container.innerHTML = `
+                <div class="castle-game">
+                    <h3>Исследуйте замок и найдите сокровище!</h3>
+                    <div class="game-score" id="castleScore">Исследовано комнат: 0</div>
+                    <div class="castle-map" id="castleMap"></div>
+                </div>
+            `;
+            
+            const map = document.getElementById('castleMap');
+            const scoreEl = document.getElementById('castleScore');
+            
+            for (let i = 0; i < totalRooms; i++) {
+                const room = document.createElement('div');
+                room.className = 'castle-room';
+                if (i === treasureRoom) {
+                    room.dataset.treasure = 'true';
+                }
+                room.dataset.index = i;
+                
+                room.addEventListener('click', () => {
+                    if (room.dataset.treasure === 'true') {
+                        room.classList.add('treasure');
+                        room.textContent = '💎';
+                        setTimeout(() => {
+                            alert('Поздравляем! Вы нашли сокровище!');
+                            resetCastle();
+                        }, 500);
+                    } else {
+                        room.classList.add('visited');
+                        visited.add(i);
+                        scoreEl.textContent = `Исследовано комнат: ${visited.size}`;
+                    }
+                });
+                
+                map.appendChild(room);
+            }
+            
+            function resetCastle() {
+                visited.clear();
+                loadCastleGame(container);
+            }
+        }
+        
+        // Игра Приключения (3D)
+        function loadAdventureGame(container) {
+            const playerAvatarHTML = create3DAvatar(null, 100);
+            let adventureStarted = false;
+            
+            container.innerHTML = `
+                <div class="adventure-game" style="text-align: center;">
+                    <h3>3D Приключения! Исследуйте мир со своим аватаром!</h3>
+                    <p style="margin: 1rem 0; color: #666;">Ваш аватар готов к приключениям</p>
+                    <div class="game-3d-container" style="width: 100%; height: 500px; background: linear-gradient(135deg, #87ceeb 0%, #98fb98 30%, #8b7355 60%, #654321 100%); border-radius: 15px; margin: 2rem 0; position: relative; overflow: hidden; perspective: 1000px; transform-style: preserve-3d;" id="adventureWorld">
+                        <div style="position: absolute; top: 20px; left: 20px; font-size: 4rem; transform: translateZ(50px); filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));">🏔️</div>
+                        <div style="position: absolute; top: 20px; right: 20px; font-size: 4rem; transform: translateZ(50px); filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));">🌲</div>
+                        <div style="position: absolute; bottom: 100px; left: 50%; transform: translateX(-50%) translateZ(100px);" id="adventurePlayer">
+                            ${playerAvatarHTML}
+                        </div>
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) translateZ(30px); font-size: 3rem; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));">🗺️</div>
+                        <div style="position: absolute; bottom: 20px; left: 30px; font-size: 3rem; transform: translateZ(40px); filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));">🌳</div>
+                        <div style="position: absolute; bottom: 20px; right: 30px; font-size: 3rem; transform: translateZ(40px); filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));">🌳</div>
+                    </div>
+                    <p style="color: #666;">Используйте стрелки ← → ↑ ↓ для движения вашего аватара</p>
+                    <div style="margin-top: 2rem;">
+                        <button class="house-btn" id="startAdventure">Начать приключение</button>
+                    </div>
+                </div>
+            `;
+            
+            const adventureWorld = document.getElementById('adventureWorld');
+            const adventurePlayer = document.getElementById('adventurePlayer');
+            const startBtn = document.getElementById('startAdventure');
+            let playerX = 50;
+            let playerY = 50;
+            
+            startBtn.addEventListener('click', () => {
+                if (!adventureStarted) {
+                    adventureStarted = true;
+                    startBtn.textContent = 'Приключение началось!';
+                    startBtn.disabled = true;
+                    
+                    // Анимация движения аватара
+                    const moveInterval = setInterval(() => {
+                        adventurePlayer.style.transform = `translateX(-50%) translateZ(100px) rotateY(${Math.sin(Date.now() / 500) * 10}deg)`;
+                    }, 50);
+                }
+            });
+            
+            // Управление аватаром
+            document.addEventListener('keydown', (e) => {
+                if (!adventureStarted) return;
+                
+                const step = 2;
+                if (e.key === 'ArrowLeft' && playerX > 10) {
+                    playerX -= step;
+                    adventurePlayer.style.left = playerX + '%';
+                    adventurePlayer.style.transform = `translateX(-50%) translateZ(100px) rotateY(15deg)`;
+                }
+                if (e.key === 'ArrowRight' && playerX < 90) {
+                    playerX += step;
+                    adventurePlayer.style.left = playerX + '%';
+                    adventurePlayer.style.transform = `translateX(-50%) translateZ(100px) rotateY(-15deg)`;
+                }
+                if (e.key === 'ArrowUp' && playerY > 20) {
+                    playerY -= step;
+                    adventurePlayer.style.bottom = playerY + '%';
+                }
+                if (e.key === 'ArrowDown' && playerY < 80) {
+                    playerY += step;
+                    adventurePlayer.style.bottom = playerY + '%';
+                }
+                
+                setTimeout(() => {
+                    adventurePlayer.style.transform = `translateX(-50%) translateZ(100px) rotateY(0deg)`;
+                }, 200);
+            });
+        }
+        
+        // Игра Платформер (2D)
+        function loadPlatformGame(container) {
+            let playerY = 200;
+            let playerX = 50;
+            let velocityY = 0;
+            let onGround = false;
+            let score = 0;
+            let gameRunning = false;
+            
+            container.innerHTML = `
+                <div class="platform-game" style="text-align: center;">
+                    <h3>2D Платформер!</h3>
+                    <div class="game-score">Счет: ${score}</div>
+                    <div style="width: 100%; height: 400px; background: linear-gradient(to bottom, #87ceeb 0%, #98fb98 100%); border-radius: 15px; margin: 2rem 0; position: relative; overflow: hidden; border: 3px solid #333;" id="platformCanvas">
+                        <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 50px; background: #8b7355; border-top: 3px solid #5d4e37;" class="ground"></div>
+                        <div style="position: absolute; bottom: 100px; left: 200px; width: 100px; height: 20px; background: #8b7355; border-radius: 5px;" class="platform"></div>
+                        <div style="position: absolute; bottom: 200px; left: 400px; width: 100px; height: 20px; background: #8b7355; border-radius: 5px;" class="platform"></div>
+                        <div style="position: absolute; bottom: ${playerY}px; left: ${playerX}px; font-size: 3rem; transition: all 0.1s; z-index: 10;" id="platformPlayer">🦘</div>
+                    </div>
+                    <div style="margin-top: 1rem;">
+                        <button class="race-btn" id="startPlatform">Начать</button>
+                        <button class="race-btn" id="jumpBtn">Прыжок (Пробел)</button>
+                    </div>
+                    <p style="color: #666; margin-top: 1rem;">Используйте стрелки ← → для движения, Пробел для прыжка</p>
+                </div>
+            `;
+            
+            const canvas = document.getElementById('platformCanvas');
+            const player = document.getElementById('platformPlayer');
+            const startBtn = document.getElementById('startPlatform');
+            const jumpBtn = document.getElementById('jumpBtn');
+            const platforms = canvas.querySelectorAll('.platform');
+            const ground = canvas.querySelector('.ground');
+            
+            function startGame() {
+                if (gameRunning) return;
+                gameRunning = true;
+                startBtn.disabled = true;
+                playerY = 200;
+                playerX = 50;
+                velocityY = 0;
+                score = 0;
+                updateScore();
+                
+                const gameLoop = setInterval(() => {
+                    if (!gameRunning) {
+                        clearInterval(gameLoop);
+                        return;
+                    }
+                    
+                    // Гравитация
+                    if (!onGround) {
+                        velocityY += 0.5;
+                        playerY += velocityY;
+                    }
+                    
+                    // Проверка столкновения с платформами
+                    onGround = false;
+                    const playerRect = { x: playerX, y: playerY, width: 48, height: 48 };
+                    
+                    platforms.forEach(platform => {
+                        const rect = platform.getBoundingClientRect();
+                        const canvasRect = canvas.getBoundingClientRect();
+                        const platformY = rect.top - canvasRect.top;
+                        const platformX = rect.left - canvasRect.left;
+                        
+                        if (playerRect.x < platformX + 100 && 
+                            playerRect.x + 48 > platformX &&
+                            playerRect.y + 48 > platformY &&
+                            playerRect.y < platformY + 20 &&
+                            velocityY > 0) {
+                            playerY = platformY - 48;
+                            velocityY = 0;
+                            onGround = true;
+                        }
+                    });
+                    
+                    // Проверка столкновения с землей
+                    if (playerY >= 350) {
+                        playerY = 350;
+                        velocityY = 0;
+                        onGround = true;
+                    }
+                    
+                    // Обновление позиции
+                    player.style.bottom = (400 - playerY - 48) + 'px';
+                    player.style.left = playerX + 'px';
+                    
+                    // Увеличение счета
+                    score += 1;
+                    updateScore();
+                }, 16);
+            }
+            
+            function jump() {
+                if (onGround && gameRunning) {
+                    velocityY = -15;
+                    onGround = false;
+                }
+            }
+            
+            function updateScore() {
+                document.querySelector('.game-score').textContent = `Счет: ${score}`;
+            }
+            
+            startBtn.addEventListener('click', startGame);
+            jumpBtn.addEventListener('click', jump);
+            
+            // Клавиатурное управление
+            document.addEventListener('keydown', (e) => {
+                if (!gameRunning) return;
+                if (e.key === 'ArrowLeft' && playerX > 0) {
+                    playerX -= 5;
+                }
+                if (e.key === 'ArrowRight' && playerX < canvas.offsetWidth - 48) {
+                    playerX += 5;
+                }
+                if (e.key === ' ' || e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    jump();
+                }
+            });
+        }
+    </script>
+</body>
+</html>
+
+
